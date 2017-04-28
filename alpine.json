@@ -13,6 +13,7 @@
       "changes": [
         "USER jenkins",
         "EXPOSE 8080",
+        "VOLUME /var/lib/jenkins",
         "ENTRYPOINT [\"dumb-init\", \"java\", \"-Djava.awt.headless=true\", \"-jar\", \"/usr/share/jenkins/jenkins.war\"]"
       ]
     }
