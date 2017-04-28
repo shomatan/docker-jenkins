@@ -1,0 +1,40 @@
+{
+  "variables": {
+    "ansible_host": "default",
+    "ansible_connection": "docker"
+  },
+  "builders": [
+    {
+      "type": "docker",
+      "image": "shomatan/java:8-alpine",
+      "commit": "true",
+      "author": "Shoma Nishitateno",
+      "run_command": [ "-d", "-i", "-t", "--name", "{{user `ansible_host`}}", "{{.Image}}", "/bin/sh" ],
+      "changes": [
+        "USER jenkins",
+        "EXPOSE 8080",
+        "ENTRYPOINT [\"dumb-init\", \"java\", \"-Djava.awt.headless=true\", \"-jar\", \"/usr/share/jenkins/jenkins.war\"]"
+      ]
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "ansible",
+      "user": "root",
+      "playbook_file": "site.yml",
+      "extra_arguments": [
+        "--extra-vars",
+        "ansible_host={{user `ansible_host`}} ansible_connection={{user `ansible_connection`}}"
+      ]
+    }
+  ],
+  "post-processors": [
+    [
+      {
+        "type": "docker-tag",
+        "repository": "shomatan/jenkins",
+        "tag": "2.46.2-alpine"
+      }
+    ]
+  ]
+}
